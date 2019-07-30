@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xiaoxian.mapper.UserLoginMapper">
+    <select id="getUserInfo" resultType="java.util.Map">
+        select * from userinfo where
+        yxbz='Y'
+        <if test="uphone!=null and uphone!=''">
+            and uphone=#{uphone}
+        </if>
+        <if test="uemail!=null and uemail!=''">
+            and uemail=#{uemail}
+        </if>
+        <if test="upassword!=null and upassword!=''">
+            and upassword=#{upassword}
+        </if>
+    </select>
+
+    <insert id="saveLoginLog" parameterType="java.lang.String">
+        insert into loginlog (userid) values (#{userid})
+    </insert>
+
+    <insert id="addUser" parameterType="java.lang.String">
+        <selectKey keyProperty="userid" resultType="string" order="BEFORE">
+            select replace(uuid(), '-', '') as id from dual
+        </selectKey>
+        insert into userinfo (userid,username,upassword,uemail,uphone,usex,yxbz) values (#{userid},#{username},#{upassword},#{uemail},#{uphone},#{usex},'Y')
+    </insert>
+
+
+</mapper>

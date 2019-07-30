@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xiaoxian.mapper.LoginMapper">
+    <select id="getUser" resultType="java.util.Map">
+        select *
+        from t_user
+        where YXBZ='Y'
+        <if test="SJH!=null and SJH!=''">
+            and U_Telephone=#{SJH}
+        </if>
+        <if test="EMAIL!=null and EMAIL!= ''">
+            and U_Email=#{EMAIL}
+        </if>
+    </select>
+
+    <insert id="addUser" parameterType="java.lang.String">
+        insert into t_user(U_NickName,U_PassWord,U_Telephone,U_Email,U_YXBZ,U_CreateTime) values(#{NC},#{MIMA},#{SJH},#{EMAIL},'Y',#{ZCRQ,jdbcType=TIMESTAMP})
+    </insert>
+
+    <insert id="saveLoginlog" parameterType="java.lang.String">
+        insert into t_user_LoginLog (L_UserId,L_LogTime) values (#{DLRID},#{DLRQ,jdbcType=TIMESTAMP})
+    </insert>
+
+</mapper>

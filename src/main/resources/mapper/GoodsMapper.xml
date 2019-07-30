@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xiaoxian.mapper.GoodsMapper">
+    <select id="selectGoodsInfo" resultType="java.util.Map">
+        select * from goodsinfo where yxbz = 'Y'
+        <if test="goodsname!=null and goodsname!=''" >
+            and goodsname like CONCAT(CONCAT('%',#{goodsname},'%'))
+        </if>
+    </select>
+
+    <select id="getGoodDetailsById" resultType="java.util.Map">
+        select * from goodsinfo where yxbz='Y' and goodsid=#{goodsid}
+    </select>
+
+    <!--生成订单信息-->
+    <insert id="GenerateOrderInformation" parameterType="java.lang.String">
+        <selectKey keyProperty="orderid" resultType="string" order="BEFORE">
+            select replace(uuid(), '-', '') as id from dual
+        </selectKey>
+        insert into buyersorderinfo(orderid,userid,userid1,receivername,address,tel,email,cost,state,send,yxbz)
+         values (#{orderid},#{userid},#{userid1},#{receivername},#{address},#{tel},#{email},#{cost},#{state},#{send},'Y')
+    </insert>
+
+    <!--获取订单ID-->
+    <select id="getOrderIdInfo" resultType="java.util.Map">
+        select * from buyersorderinfo where yxbz='Y'
+        <if test="userid!=null and userid !=''">
+            and userid =#{userid}
+        </if>
+        <if test="userid1!=null and userid1!=''">
+            and userid1=#{userid1}
+        </if>
+        <if test="receivername!=null and receivername !=''">
+            and receivername = #{receivername}
+        </if>
+        <if test="address !=null and address !=''">
+            and address = #{address}
+        </if>
+        <if test=" tel !=null and tel !=''">
+            and tel = #{tel}
+        </if>
+        <if test="email !=null and email !=''">
+            and email = #{email}
+        </if>
+        <if test="cost !=null and cost!=''">
+            and cost = #{cost}
+        </if>
+        <if test="state !=null and  state !=''">
+            and state = #{state}
+        </if>
+        <if test="send !=null and send != '' ">
+            and send = #{send}
+        </if>
+    </select>
+
+    <!--生成订单详情信息-->
+    <insert id="GenerateOrderDetailInfo" parameterType="java.lang.String">
+        insert into orderdetailsinfo (orderid,goodsid,goodsname,goodsprice,goodsnum,concost,yxbz)
+         values (#{orderid},#{goodsid},#{goodsname},#{goodsprice ,jdbcType=DECIMAL},#{goodsnum},#{concost ,jdbcType=DECIMAL},'Y')
+    </insert>
+
+</mapper>

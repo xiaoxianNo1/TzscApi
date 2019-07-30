@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xiaoxian.mapper.OrderMapper">
+    <select id="getOrderList" resultType="java.util.Map">
+        SELECT * FROM orderdetailsinfo INNER JOIN
+          buyersorderinfo
+          on orderdetailsinfo.orderid=buyersorderinfo.orderid WHERE
+          userid=#{userid}
+          and buyersorderinfo.yxbz='Y'
+          ORDER BY ordertime DESC
+    </select>
+
+    <select id="getOrderListForSell" resultType="java.util.Map">
+        SELECT * FROM orderdetailsinfo INNER JOIN
+          buyersorderinfo
+          on orderdetailsinfo.orderid=buyersorderinfo.orderid WHERE
+          userid1=#{userid1}
+          and buyersorderinfo.yxbz='Y'
+          ORDER BY ordertime DESC
+    </select>
+
+</mapper>

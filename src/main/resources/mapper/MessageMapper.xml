@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xiaoxian.mapper.MessageMapper">
+
+    <!--获取所有用户-->
+    <select id="getUserList" resultType="java.util.Map">
+        select userid,username,uemail,uphone,usex from  userinfo where yxbz='Y'
+    </select>
+
+    <!--根据用户id获取所有私聊消息-->
+    <select id="getMsgByIdsList" resultType="java.util.Map">
+        SELECT * FROM
+	      (
+	      SELECT * FROM
+            (SELECT
+	          t.*,
+	          d.username AS msgfromusername,
+	          f.username AS msgtousername
+              FROM
+	          t_messages t,
+	          ( SELECT
+	          u.username,
+	          u.userid,
+	          t.msgid
+              FROM
+	          userinfo u,
+	          t_messages t
+              WHERE
+	          u.userid = t.msgfromuserid
+	         ) d,
+	          ( SELECT
+	          u.username,
+	          u.userid,
+	          t.msgid
+              FROM
+	          userinfo u,
+	          t_messages t
+              WHERE
+	          u.userid = t.msgtouserid
+	          ) f
+            WHERE
+	        t.msgid = d.msgid
+	        AND t.msgid = f.msgid) m
+            WHERE
+            m.msgfromuserid =#{userloginid} or
+            m.msgtouserid=#{userloginid}
+	      ) T
+        WHERE
+	    T.msgfromuserid = #{userfriendid}
+	    OR T.msgtouserid = #{userfriendid}
+        ORDER BY
+	    msgtime ASC
+    </select>
+
+
+    <select id="getMsgList" resultType="java.util.Map">
+        SELECT
+	    msgid,
+	    msgcontent,
+	    msgstatus,
+	    MAX( msgtime ) AS msgtime,
+	    msgtypeid,
+	    msgfromuserid,
+	    msgtouserid,
+	    yxbz
+        FROM
+	    t_messages
+        WHERE
+	    yxbz = 'Y'
+	    AND msgfromuserid = #{msguserid}
+	    OR msgtouserid = #{msguserid}
+        GROUP BY
+	    msgfromuserid
+        ORDER BY
+	    msgtime DESC
+    </select>
+    <select id="getMsgById" resultType="java.util.Map">
+        SELECT * FROM t_messages WHERE yxbz='Y'
+        <if test="msgfromuserid!=null and msgfromuserid!=''">
+            and msgfromuserid=#{msgfromuserid}
+        </if>
+        <if test="msgtouserid!=null and msgtouserid != ''">
+            and msgtouserid=#{msgtouserid}
+        </if>
+        <if test="msgstatus!=null and msgstatus!=''">
+            and msgstatus=#{msgstatus}
+        </if>
+        order by msgtime asc
+    </select>
+
+    <insert id="insertmsg" parameterType="java.lang.String">
+        INSERT INTO t_messages ( msgcontent, msgstatus, msgtypeid, msgfromuserid, msgtouserid, yxbz )
+        VALUES
+        (#{msgcontent},'0',1,#{msgfromuserid},#{msgtouserid},'Y');
+    </insert>
+
+</mapper>
